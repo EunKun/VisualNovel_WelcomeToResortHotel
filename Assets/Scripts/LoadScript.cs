@@ -87,72 +87,68 @@ public class Script{
         if(!TextManager.isNovelScriptMode) 
             _mainText.text = "";
 
-        _script = AddCharaName(_charaName, _script);
+        if(_charaName != "")
+        {
+            if (_charaName.Contains("주인공"))
+                _charaName.Replace("주인공", TextManager.playerName);
+
+            _mainText.text = "<color=yellow>" + _charaName + "</color>「";
+        }
 
         string[] temp = _script.Split('|'); //스토퍼 기능
-        string[] copytemp = temp;
+
+        string _scriptText = ReplaceCommand(ref temp);
 
         if (TextManager.isCenterScriptMode)
             TextManager.centerScript += _script + "\n";
         else
             TextManager.novelScript += _script + "\n";
 
-        string _scriptText = ReplaceColorOrder(temp, ref copytemp);
-
-        if (temp.Length == 1)
+        for (int i = 0; i < temp.Length; i++)
         {
-            foreach (char letter in _scriptText)
+            char[] letter = temp[i].ToCharArray();
+
+            if (temp[i].Trim() == "s")
             {
-                if (letter == '@')
+                GameManager.ins.state = GameManager.State.Stop;
+                TextManager.isScriptPeriod = true;
+                yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+                TextManager.isScriptPeriod = false;
+                GameManager.ins.state = GameManager.State.Play;
+            }
+
+            for (int j = 0; j < letter.Length; j++)
+            {
+                if (letter[j] == '@')
                     _mainText.text += ',';
                 else
-                    _mainText.text += letter;
+                {
+                    if (_charaName != "" &&
+                        j == letter.Length -1)
+                        _mainText.text += letter[j] + "」";
+                    else
+                        _mainText.text += letter[j];
+                }
 
                 yield return null;
             }
         }
-        else
-        {
-            for (int i = 0; i < temp.Length; i++)
-            {
-                char[] letter = copytemp[i].ToCharArray();
 
-                if (temp[i].Trim() == "s")
-                {
-                    GameManager.ins.state = GameManager.State.Stop;
-                    TextManager.isScriptPeriod = true;
-                    yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
-                    TextManager.isScriptPeriod = false;
-                    GameManager.ins.state = GameManager.State.Play;
-                }
-                else
-                {
-                    for (int j = 0; j < letter.Length; j++)
-                    {
-                        if (letter[j] == '@')
-                            _mainText.text += ',';
-                        else
-                            _mainText.text += letter[j];
-
-                        yield return null;
-                    }
-                }
-            }
-        }
-
-        ReplaceText(_script);
+        ReplaceText(_scriptText);
     }
 
-    static string ReplaceColorOrder(string[] _orderScript, ref string[] copytemp)
+    static string ReplaceCommand(ref string[] copytemp)
     {
-        copytemp = _orderScript;
+        string[] _orderScript = copytemp;
         string result = "";
-        string[] _convert = { "<color=red>", "<color=blue>", "</color>", "\n", "<i>", "@"};
+        string[] _convert = { "<color=red>", "<color=blue>", "</color>", "\n", "<i>", "주인공"};
         for (int i = 0; i < _orderScript.Length; i++)
         {
             foreach(string _convertWord in _convert)
             {
-                if (_orderScript[i].Contains(_convertWord))
+                if (_orderScript[i].Contains("주인공"))
+                    copytemp[i] = _orderScript[i].Replace(_convertWord, TextManager.playerName);
+                else
                     copytemp[i] = _orderScript[i].Replace(_convertWord, "");
             }
         }
@@ -160,6 +156,7 @@ public class Script{
         foreach (string _temp in copytemp)
             result += _temp;
 
+        Debug.Log("텍스트 확인 : " + result);
         return result;
     }
 
@@ -180,15 +177,12 @@ public class Script{
     static string AddCharaName(string _charName, string script)
     {
         string _temp = "";
-        if (_charName != "")
-        {
-            if (_charName == "주인공")
-                _charName = TextManager.playerName;
 
-            _temp = _charName + "「" + script + "」";
-        }
-        else
+        if(_charName == "")
             _temp = _charName + script;
+        else
+            _temp = _charName + "「" + script + "」";
+
 
         return _temp;
     }

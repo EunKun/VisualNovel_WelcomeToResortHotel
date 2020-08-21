@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour
         state = State.Select;
     }
 
-
     public void Btn_NewStart()
     {
         if (state == State.Select)

@@ -36,6 +36,9 @@ public class TextManager : MonoBehaviour
     public static GameObject fadeOut;
     public static GameObject selectBtnMainObj;
     public static Button[] selectBtns = new Button[3];
+    public static GameObject centerImageObj; // 중앙 이미지 출력 패널
+    public static Image centerImage; // 중앙 이미지
+    
     [Header("로그 관련")]
     public static GameObject mainLogObj;
     public static Transform normalLogParentPos;
@@ -52,7 +55,6 @@ public class TextManager : MonoBehaviour
     #endregion
 
     #region test
-    public GameObject[] testObj;
     public Text testViewScript;
     #endregion
 
@@ -66,6 +68,10 @@ public class TextManager : MonoBehaviour
         charaPos = GameObject.Find("CharaPosition").GetComponentsInChildren<Transform>();
         fadeOut = GameObject.Find("FadeOut");
         selectBtnMainObj = GameObject.Find("SelectBtn");
+
+        centerImageObj = GameObject.Find("CenterImagePanel");
+        centerImage = centerImageObj.transform.GetChild(0).GetChild(0).GetComponent<Image>();
+        centerImageObj.SetActive(false);
 
         selectBtns = new Button[3];
         for (int i = 0; i < selectBtnMainObj.transform.childCount; i++)
@@ -97,9 +103,9 @@ public class TextManager : MonoBehaviour
 
     void Update()
     {
-        if(GameManager.ins.state == GameManager.State.Play)
+        if (GameManager.ins.state == GameManager.State.Play)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
                 NextScript();
         }
 
@@ -139,44 +145,33 @@ public class TextManager : MonoBehaviour
         //테스트용 스크립트 출력용
         testViewScript.text = totalScripts[scriptNum];
 
-        if (_script.Contains("(주인공)"))
-        {
-            _script = _script.Replace("(주인공)", playerName);
-        }
-
         GameManager.ins.SaveData();
-        Script.NovelScriptMode(_mode);
 
-        string[] _modeCheck = new string[2];
+        if(_mode.Contains("_mode"))
+            Script.NovelScriptMode(_mode);
+
+        if (_mode.Contains("centerImage"))
+            CenterImagePanel(_mode);
+
         if (_mode.Contains("fadein") || _mode.Contains("fadeout"))
+            StartCoroutine(Fade(_mode));
+
+        if (_script == "")
         {
-            _modeCheck = _mode.Split('_');
-            if (_modeCheck[0].Trim() == "fadein" || _modeCheck[0].Trim() == "fadeout")
-            {
-                GameManager.ins.state = GameManager.State.Fading;
-                Debug.Log("페이드 시간 : " + _modeCheck[1]);
-
-                int _fadeTimeLength = int.Parse(_modeCheck[1]);
-
-                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 1, _fadeTimeLength * 0.1f);
-                yield return new WaitForSeconds(_fadeTimeLength * 0.1f);
-                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 0, _fadeTimeLength * 0.1f);
-
-                GameManager.ins.state = GameManager.State.Play;
-            }
-            else
-                Debug.Log("스크립트 명령어 틀린듯?");
+            scriptNum++;
+            NextScript();
         }
-
-        yield return new WaitUntil(() => GameManager.ins.state == GameManager.State.Play);
-
-        if (GameManager.ins.state == GameManager.State.Play)
+        else
         {
+            if (_script.Contains("(주인공)"))
+                _script = _script.Replace("(주인공)", playerName);
+
+            yield return new WaitUntil(() => GameManager.ins.state == GameManager.State.Play);
+            
             if (_mode.Contains("select"))
                 SelectButton.Open(_mode, _selectBtn, _keypoint);
 
             TextInit();
-
             StopAllCoroutines();
 
             if (isCenterScriptMode)
@@ -188,11 +183,46 @@ public class TextManager : MonoBehaviour
                 else
                     StartCoroutine(Script.OutputText(normalMainScriptText, _charaName, _script));
             }
-            Script.CharaMove(_charaMoving, testObj);
-        }
 
-        //나중에 풀어야 함
-        //PlayMusic.Play(_bgm, _se); 
+            Script.CharaMove(_charaMoving, charaObjs);
+
+            //나중에 풀어야 함
+            //PlayMusic.Play(_bgm, _se); 
+        }
+    }
+
+    IEnumerator Fade(string _mode)
+    {
+        string[] _modeCheck = new string[2];
+
+        _modeCheck = _mode.Split('_');
+        if (_modeCheck[0].Trim() == "fadein" || _modeCheck[0].Trim() == "fadeout")
+        {
+            GameManager.ins.state = GameManager.State.Fading;
+            Debug.Log("페이드 시간 : " + _modeCheck[1]);
+
+            int _fadeTimeLength = int.Parse(_modeCheck[1]);
+
+            LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 1, _fadeTimeLength * 0.1f);
+            yield return new WaitForSeconds(_fadeTimeLength * 0.1f);
+            LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 0, _fadeTimeLength * 0.1f);
+
+            GameManager.ins.state = GameManager.State.Play;
+        }
+        else
+            Debug.Log("스크립트 명령어 틀린듯?");
+    }
+
+    void CenterImagePanel(string _mode)
+    {
+        if (_mode.Contains("centerImage_close"))
+            centerImageObj.SetActive(false);
+        else if (_mode.Contains("centerImage"))
+        {
+            string[] imageName = _mode.Split('_');
+            centerImageObj.SetActive(true);
+            centerImage.sprite = atlas.GetSprite(imageName[1]);
+        }
     }
 
     public void LoadNewText(string _scriptFileName)

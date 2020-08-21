@@ -27,18 +27,19 @@ public class UIManager : MonoBehaviour
         {
             int _alertPanelCount = AlertPanelManager.alertObj.transform.childCount -1;
             //Debug.Log("경고창 수 : " + _alertPanelCount);
+            
 
             for (int i = 0; i <= _alertPanelCount; i++)
             {
-                if(AlertPanelManager.alertObj.transform.GetChild(i).gameObject.activeSelf)
+                GameObject _turnoffObj = AlertPanelManager.alertObj.transform.GetChild(i).gameObject;
+                if (_turnoffObj.activeSelf)
                 {
-                    AlertPanelManager.alertObj.transform.GetChild(i).gameObject.SetActive(false);
+                    _turnoffObj.SetActive(false);
                     break;
                 }
-                else if(!AlertPanelManager.alertObj.transform.GetChild(i).gameObject.activeSelf && i > 0)
+                else if(!_turnoffObj.activeSelf && i > 0)
                 {
-                    AlertPanelManager.alertObj.transform.GetChild(i).gameObject.SetActive(true);
-                    //Debug.Log(AlertPanelManager.alertObj.transform.GetChild(i).gameObject.name);
+                    _turnoffObj.SetActive(true);
                     break;
                 }
             }

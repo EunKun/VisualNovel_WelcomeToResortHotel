@@ -63,31 +63,44 @@ public class SoundManager : MonoBehaviour {
 
     private void Start()
     {
-        /* 나중에 오픈할 예정
         option.bgmSlider.value = PlayerPrefs.GetFloat("bgmVolume", volumeDefault);
         option.seSlider.value = PlayerPrefs.GetFloat("seVolumeValue", volumeDefault);
-        */
+    }
+
+    void Save()
+    {
+        PlayerPrefs.SetFloat("bgmVolume", option.bgmSlider.value);
+        PlayerPrefs.SetFloat("seVolumeValue", option.seSlider.value);
     }
 
     // Update is called once per frame
     void Update () {
-        /*
         //옵션창 텍스트값
         if (mainObj.activeSelf)
         {
             if (!option.isBGM_Mute)
-                option.bgmValueText.text = string.Format("{0:F0}", (option.bgmSlider.value * 100f));
+            {
+                if (Input.GetMouseButtonUp(0) && ViewValue(option.bgmSlider.value) != ViewValue(option.bgmValue))
+                    Save();
+
+                option.bgmValueText.text = ViewValue(option.bgmSlider.value);
+            }
             else
             {
-                option.bgmValueText.text = string.Format("{0:F0}", (option.bgmValue * 100f));
+                option.bgmValueText.text = ViewValue(option.bgmValue);
                 option.bgmSlider.value = option.bgmValue;
             }
 
             if (!option.isSE_Mute)
-                option.seValueText.text = string.Format("{0:F0}", (option.seSlider.value * 100f));
+            {
+                if (Input.GetMouseButtonUp(0) && ViewValue(option.seSlider.value) != ViewValue(option.seValue))
+                    Save();
+
+                option.seValueText.text = ViewValue(option.seSlider.value);
+            }
             else
             {
-                option.seValueText.text = string.Format("{0:F0}", (option.seValue * 100f));
+                option.seValueText.text = ViewValue(option.seValue);
                 option.seSlider.value = option.seValue;
             }
         }
@@ -95,8 +108,12 @@ public class SoundManager : MonoBehaviour {
         soundController.bgm.volume = option.bgmSlider.value;
 
         //옵션창 여는 클래스
-        OptionPanelKeyFuntion();
-        */
+        //OptionPanelKeyFuntion();
+    }
+
+    string ViewValue(float _value)
+    {
+        return string.Format("{0:F0}", (_value * 100f));
     }
 
     /// <summary>
@@ -117,24 +134,25 @@ public class SoundManager : MonoBehaviour {
     /// </summary>
     void OptionPanelKeyFuntion()
     {
-        //옵션키
-        if (Input.GetKeyDown(KeyCode.Escape))
+        /*
+    //옵션키
+    if (Input.GetKeyDown(KeyCode.Escape))
+    {
+        //옵션 및 게임 종료 화면 버튼 교체
+        switch (GameManager.ins.progress)
         {
-            /*
-            //옵션 및 게임 종료 화면 버튼 교체
-            switch (GameManager.ins.progress)
-            {
-                case GameManager.Progress.title:
-                    OptionBtnPattern(false, true, true);
-                    break;
-                case GameManager.Progress.play:
-                    OptionBtnPattern(true, true, false);
-                    break;
-            }
-            */
-            //종료창 타이틀 돌아가기 버튼. 현재는 안쓰기에 항상 꺼둠
-            btnBack.gameObject.SetActive(false);
+            case GameManager.Progress.title:
+                OptionBtnPattern(false, true, true);
+                break;
+            case GameManager.Progress.play:
+                OptionBtnPattern(true, true, false);
+                break;
         }
+        //종료창 타이틀 돌아가기 버튼. 현재는 안쓰기에 항상 꺼둠
+        btnBack.gameObject.SetActive(false);
+    }
+        */
+
     }
 
     //음소거 버튼
@@ -146,16 +164,16 @@ public class SoundManager : MonoBehaviour {
         if (seBGM)
         {
             option.isSE_Mute = !option.isSE_Mute;
-            SoundMute(option.isSE_Mute, option.seMutePanel.GetComponent<Image>(), option.seValue, option.seSlider.value);
-            Mute_Support(option.isSE_Mute, soundController.se.transform.gameObject);
+            SoundMute(option.isSE_Mute, option.seMutePanel, option.seValue, option.seSlider.value);
+            //Mute_Support(option.isSE_Mute, soundController.se.transform.gameObject);
             soundController.se.clip = null;
         }
 
         if (!seBGM)
         {
             option.isBGM_Mute = !option.isBGM_Mute;
-            SoundMute(option.isBGM_Mute, option.bgmMutePanel.GetComponent<Image>(), option.bgmValue, option.bgmSlider.value);
-            Mute_Support(option.isBGM_Mute, soundController.bgm.transform.gameObject);
+            SoundMute(option.isBGM_Mute, option.bgmMutePanel, option.bgmValue, option.bgmSlider.value);
+            //Mute_Support(option.isBGM_Mute, soundController.bgm.transform.gameObject);
         }
     }
     /// <summary>
@@ -180,12 +198,12 @@ public class SoundManager : MonoBehaviour {
     /// <param name="panel"></param>
     /// <param name="soundValue"></param>
     /// <param name="value"></param>
-    void SoundMute(bool isMute, Image panel, float soundValue, float value)
+    void SoundMute(bool isMute, GameObject panel, float soundValue, float value)
     {
         if (isMute)
-            panel.color = option.color[1];
+            panel.GetComponent<Text>().color = option.color[0];
         else
-            panel.color = option.color[0];
+            panel.GetComponent<Text>().color = option.color[1];
 
         soundValue = value;
     }
