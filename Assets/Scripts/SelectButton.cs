@@ -68,34 +68,31 @@ public class SelectButton : MonoBehaviour
         Debug.Log("투르엔딩 포인트 : " + GameManager.ins.keyPoint);
         PlayerPrefs.SetInt(GameManager.ins.saveString[2], GameManager.ins.keyPoint);
 
-        CloseBtn(true, _keyPoint, null);
+        CloseBtn(_keyPoint, null);
     }
 
     public static void Btn_ScriptLineChange(string _line)
     {
-        CloseBtn(false, 0, _line);
+        CloseBtn(0, _line);
     }
 
-    static void CloseBtn(bool isPoint, int _point, string _scriptLine)
+    static void CloseBtn(int _point, string _scriptLine)
     {
         for (int i = 0; i < TextManager.selectBtns.Length; i++)
             TextManager.selectBtns[i].transform.parent.gameObject.SetActive(false);
 
-        GameManager.ins.state = GameManager.State.Play;
-
-        int _lineNum = 0;
-
-        if(isPoint)
-            GameManager.ins.tm.NextScript();
-        else
+        if (_scriptLine != null)
         {
+            int _lineNum = 0;
             if (int.TryParse(_scriptLine, out _lineNum))
             {
                 TextManager.scriptNum = _lineNum;
-                GameManager.ins.tm.NextScript();
             }
             else
                 Debug.Log("라인점프 뻑남");
         }
+
+        GameManager.ins.tm.NextScript();
+        GameManager.ins.state = GameManager.State.Play;
     }
 }

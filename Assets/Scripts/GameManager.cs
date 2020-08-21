@@ -38,20 +38,22 @@ public class GameManager : MonoBehaviour
 
     public void FirstStart()
     {
+        GameObject btnClearBonusParent = ui.clearBonusBtn.transform.parent.gameObject;
+
         if (PlayerPrefs.GetInt(saveString[1], 0) != 0 && PlayerPrefs.GetInt(saveString[1], 0) != 1)
             ui.loadBtn.interactable = true;
         else
             ui.loadBtn.interactable = false;
 
         if (PlayerPrefs.GetInt(saveString[3], 0) != 0)
-            ui.clearBonusBtn.transform.parent.gameObject.SetActive(true);
+            btnClearBonusParent.SetActive(true);
         else
-            ui.clearBonusBtn.transform.parent.gameObject.SetActive(false);
+            btnClearBonusParent.SetActive(false);
     }
 
     public void OpenPlayerNameInput()
     {
-        AlertPanelManager.playerNameInputFieldObj.gameObject.SetActive(true);
+        AlertPanelManager.playerNameInputFieldObj.SetActive(true);
         state = State.Select;
     }
 
@@ -74,7 +76,7 @@ public class GameManager : MonoBehaviour
 
         state = State.Play;
 
-        AlertPanelManager.playerNameInputFieldObj.gameObject.SetActive(false);
+        AlertPanelManager.playerNameInputFieldObj.SetActive(false);
         ui.mainTitleObj.SetActive(false);
         tm.NextScript();
     }
