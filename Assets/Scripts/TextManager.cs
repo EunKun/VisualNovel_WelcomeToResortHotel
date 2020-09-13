@@ -11,6 +11,7 @@ public class TextManager : MonoBehaviour
     //텍스트 명 설정
     [System.NonSerialized] public string scriptFileName = "1";
     public static string playerName;
+    public static readonly string playerColorName = "<color=yellow>";
     #endregion
 
     #region OutPutText
@@ -51,7 +52,7 @@ public class TextManager : MonoBehaviour
     public SpriteAtlas atlas;
     public static Transform[] charaPos;
     public GameObject[] charaObjs;
-    string[] charaName = new string[3];
+    private string[] charaName = new string[3];
     #endregion
 
     #region test
@@ -147,14 +148,17 @@ public class TextManager : MonoBehaviour
 
         GameManager.ins.SaveData();
 
-        if(_mode.Contains("_mode"))
-            Script.NovelScriptMode(_mode);
+        if(_mode != "")
+        {
+            if (_mode.Contains("_mode"))
+                Script.NovelScriptMode(_mode);
 
-        if (_mode.Contains("centerImage"))
-            CenterImagePanel(_mode);
+            if (_mode.Contains("centerImage"))
+                CenterImagePanel(_mode);
 
-        if (_mode.Contains("fadein") || _mode.Contains("fadeout"))
-            StartCoroutine(Fade(_mode));
+            if (_mode.Contains("fadein") || _mode.Contains("fadeout"))
+                StartCoroutine(Fade(_mode));
+        }
 
         if (_script == "")
         {
@@ -163,8 +167,7 @@ public class TextManager : MonoBehaviour
         }
         else
         {
-            if (_script.Contains("(주인공)"))
-                _script = _script.Replace("(주인공)", playerName);
+            PlayerNameCheck(ref _charaName, ref _script);
 
             yield return new WaitUntil(() => GameManager.ins.state == GameManager.State.Play);
             
@@ -187,7 +190,7 @@ public class TextManager : MonoBehaviour
             Script.CharaMove(_charaMoving, charaObjs);
 
             //나중에 풀어야 함
-            //PlayMusic.Play(_bgm, _se); 
+            PlayMusic.Play(_bgm, _se); 
         }
     }
 
@@ -195,22 +198,34 @@ public class TextManager : MonoBehaviour
     {
         string[] _modeCheck = new string[2];
 
-        _modeCheck = _mode.Split('_');
-        if (_modeCheck[0].Trim() == "fadein" || _modeCheck[0].Trim() == "fadeout")
+        if(_mode.Contains("_"))
         {
-            GameManager.ins.state = GameManager.State.Fading;
-            Debug.Log("페이드 시간 : " + _modeCheck[1]);
+            _modeCheck = _mode.Split('_');
+            if (_modeCheck[0].Trim() == "fadein" || _modeCheck[0].Trim() == "fadeout")
+            {
+                GameManager.ins.state = GameManager.State.Fading;
+                Debug.Log("페이드 시간 : " + _modeCheck[1]);
 
-            int _fadeTimeLength = int.Parse(_modeCheck[1]);
+                int _fadeTimeLength = int.Parse(_modeCheck[1]);
 
-            LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 1, _fadeTimeLength * 0.1f);
-            yield return new WaitForSeconds(_fadeTimeLength * 0.1f);
-            LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 0, _fadeTimeLength * 0.1f);
+                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 1, _fadeTimeLength * 0.1f);
+                yield return new WaitForSeconds(_fadeTimeLength * 0.1f);
+                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 0, _fadeTimeLength * 0.1f);
 
-            GameManager.ins.state = GameManager.State.Play;
+                GameManager.ins.state = GameManager.State.Play;
+            }
+            else
+                Debug.Log("스크립트 명령어 틀린듯?");
         }
-        else
-            Debug.Log("스크립트 명령어 틀린듯?");
+    }
+
+    void PlayerNameCheck(ref string _playerName, ref string _script)
+    {
+        if (_playerName.Contains("주인공"))
+            _playerName = _playerName.Replace("주인공", playerName);
+
+        if (_script.Contains("(주인공)"))
+            _script = _script.Replace("(주인공)", playerName);
     }
 
     void CenterImagePanel(string _mode)
@@ -221,7 +236,8 @@ public class TextManager : MonoBehaviour
         {
             string[] imageName = _mode.Split('_');
             centerImageObj.SetActive(true);
-            centerImage.sprite = atlas.GetSprite(imageName[1]);
+            
+            //centerImage.sprite = atlas.GetSprite(imageName[1]);
         }
     }
 

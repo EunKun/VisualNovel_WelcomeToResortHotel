@@ -18,8 +18,8 @@ public class UIManager : MonoBehaviour
     public Text alretExplainText;
     public Button quitBtn;
     public Button titleBtn;
-    string[] quitTitle = { "앱 종료 확인", "타이틀 돌아감" };
-    string[] quitExplain = { "정말로 앱을 종료하시겠습니까?", "타이틀로 돌아가시겠습니까?"};
+    readonly string[] quitTitle = { "앱 종료 확인", "타이틀 돌아감" };
+    readonly string[] quitExplain = { "정말로 앱을 종료하시겠습니까?", "타이틀로 돌아가시겠습니까?"};
 
     private void Update()
     {
@@ -27,7 +27,6 @@ public class UIManager : MonoBehaviour
         {
             int _alertPanelCount = AlertPanelManager.alertObj.transform.childCount -1;
             //Debug.Log("경고창 수 : " + _alertPanelCount);
-            
 
             for (int i = 0; i <= _alertPanelCount; i++)
             {
@@ -82,5 +81,7 @@ public class UIManager : MonoBehaviour
     {
         if (alretObj.activeSelf)
             alretObj.SetActive(false);
+
+        GameManager.ins.sm.Btn_Open();
     }
 }

@@ -89,15 +89,11 @@ public class Script{
 
         if(_charaName != "")
         {
-            if (_charaName.Contains("주인공"))
-                _charaName.Replace("주인공", TextManager.playerName);
-
-            _mainText.text = "<color=yellow>" + _charaName + "</color>「";
+            _mainText.text = TextManager.playerColorName + _charaName + "</color>「";
         }
 
         string[] temp = _script.Split('|'); //스토퍼 기능
-
-        string _scriptText = ReplaceCommand(ref temp);
+        Debug.Log("temp 길이 : " + temp.Length);
 
         if (TextManager.isCenterScriptMode)
             TextManager.centerScript += _script + "\n";
@@ -107,57 +103,52 @@ public class Script{
         for (int i = 0; i < temp.Length; i++)
         {
             char[] letter = temp[i].ToCharArray();
+            bool isFuntion = false;
 
-            if (temp[i].Trim() == "s")
+            switch(temp[i].Trim())
             {
-                GameManager.ins.state = GameManager.State.Stop;
-                TextManager.isScriptPeriod = true;
-                yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
-                TextManager.isScriptPeriod = false;
-                GameManager.ins.state = GameManager.State.Play;
+                case "s":
+                    isFuntion = true;
+                    GameManager.ins.state = GameManager.State.Stop;
+                    TextManager.isScriptPeriod = true;
+                    yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+                    TextManager.isScriptPeriod = false;
+                    GameManager.ins.state = GameManager.State.Play;
+                    break;
+                default:
+
+                    break;
             }
 
-            for (int j = 0; j < letter.Length; j++)
+            if (!isFuntion)
             {
-                if (letter[j] == '@')
-                    _mainText.text += ',';
-                else
+                for (int j = 0; j < letter.Length; j++)
                 {
-                    if (_charaName != "" &&
-                        j == letter.Length -1)
-                        _mainText.text += letter[j] + "」";
+                    if (letter[j] == '@')
+                        _mainText.text += ',';
                     else
-                        _mainText.text += letter[j];
+                    {
+                        if (_charaName != "")
+                        {
+                            if (temp.Length == 1 && j == letter.Length)
+                                _mainText.text += letter[j] + "」";
+                            else if (temp.Length - 1 == i && j == letter.Length - 1)
+                                _mainText.text += letter[j] + "」";
+                            else
+                                _mainText.text += letter[j];
+                        }
+                        else
+                            _mainText.text += letter[j];
+                    }
+
+                    yield return null;
                 }
-
-                yield return null;
             }
+            else
+                isFuntion = true;
         }
 
-        ReplaceText(_scriptText);
-    }
-
-    static string ReplaceCommand(ref string[] copytemp)
-    {
-        string[] _orderScript = copytemp;
-        string result = "";
-        string[] _convert = { "<color=red>", "<color=blue>", "</color>", "\n", "<i>", "주인공"};
-        for (int i = 0; i < _orderScript.Length; i++)
-        {
-            foreach(string _convertWord in _convert)
-            {
-                if (_orderScript[i].Contains("주인공"))
-                    copytemp[i] = _orderScript[i].Replace(_convertWord, TextManager.playerName);
-                else
-                    copytemp[i] = _orderScript[i].Replace(_convertWord, "");
-            }
-        }
-
-        foreach (string _temp in copytemp)
-            result += _temp;
-
-        Debug.Log("텍스트 확인 : " + result);
-        return result;
+        ReplaceText(_mainText.text);
     }
 
     static void ReplaceText(string _script)

@@ -10,12 +10,14 @@ public class GameManager : MonoBehaviour
     public static GameManager ins;
     public TextManager tm;
     public UIManager ui;
+    public SoundManager sm;
     public bool isNewGame;
     public bool isAllClear = false;
 
     public int keyPoint = 1;
     [System.NonSerialized] public readonly int maxKeyPoint = 100;
     [System.NonSerialized] public string[] saveString = { "ScriptfileName", "ScriptlineNum", "EndingPoint", "Ending"};
+    readonly string saveName = "playerName";
 
     private void Awake()
     {
@@ -61,14 +63,14 @@ public class GameManager : MonoBehaviour
     {
         if (state == State.Select)
         {
-            PlayerPrefs.DeleteAll();
+            PlayerPrefs.DeleteKey(saveName);
 
             if (AlertPanelManager.playerNameField.text != "")
                 TextManager.playerName = AlertPanelManager.playerNameField.text;
             else
                 TextManager.playerName = "서진";
 
-            PlayerPrefs.SetString("playerName", TextManager.playerName);
+            PlayerPrefs.SetString(saveName, TextManager.playerName);
         }
         else
             Debug.Log("로드이거나 시작부분이 뭔가 꼬였음 확인 필요");
@@ -91,6 +93,7 @@ public class GameManager : MonoBehaviour
         Script.Load(PlayerPrefs.GetString(saveString[0]));
         TextManager.scriptNum = PlayerPrefs.GetInt(saveString[1], 1);
         keyPoint = PlayerPrefs.GetInt(saveString[2], 1);
+        TextManager.playerName = PlayerPrefs.GetString(saveName, "서진");
 
         Btn_NewStart();
     }

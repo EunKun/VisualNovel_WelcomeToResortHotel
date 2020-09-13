@@ -7,12 +7,13 @@ public class SoundManager : MonoBehaviour {
 
     public static SoundManager ins;
 
-    public GameObject mainObj;
+    public GameObject optionObj;
+    public bool isObjOn;
     public Button btnCancel;
     public Button btnComfirm;
     public Button btnBack;
 
-    float volumeDefault = 0.3f;
+    readonly float volumeDefault = 0.3f;
 
     [System.Serializable]
     public class SoundController
@@ -65,6 +66,10 @@ public class SoundManager : MonoBehaviour {
     {
         option.bgmSlider.value = PlayerPrefs.GetFloat("bgmVolume", volumeDefault);
         option.seSlider.value = PlayerPrefs.GetFloat("seVolumeValue", volumeDefault);
+
+        GameManager.ins.ui.optionBtn.onClick.AddListener(() => Btn_Open());
+
+        Close_support();
     }
 
     void Save()
@@ -76,7 +81,7 @@ public class SoundManager : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         //옵션창 텍스트값
-        if (mainObj.activeSelf)
+        if (optionObj.activeSelf)
         {
             if (!option.isBGM_Mute)
             {
@@ -106,9 +111,6 @@ public class SoundManager : MonoBehaviour {
         }
 
         soundController.bgm.volume = option.bgmSlider.value;
-
-        //옵션창 여는 클래스
-        //OptionPanelKeyFuntion();
     }
 
     string ViewValue(float _value)
@@ -129,31 +131,6 @@ public class SoundManager : MonoBehaviour {
         btnCancel.gameObject.SetActive(isActiveExit);
         btnComfirm.gameObject.SetActive(isActiveComfirm);
     }
-    /// <summary>
-    /// 물리키 발동시 옵션창을 끈다
-    /// </summary>
-    void OptionPanelKeyFuntion()
-    {
-        /*
-    //옵션키
-    if (Input.GetKeyDown(KeyCode.Escape))
-    {
-        //옵션 및 게임 종료 화면 버튼 교체
-        switch (GameManager.ins.progress)
-        {
-            case GameManager.Progress.title:
-                OptionBtnPattern(false, true, true);
-                break;
-            case GameManager.Progress.play:
-                OptionBtnPattern(true, true, false);
-                break;
-        }
-        //종료창 타이틀 돌아가기 버튼. 현재는 안쓰기에 항상 꺼둠
-        btnBack.gameObject.SetActive(false);
-    }
-        */
-
-    }
 
     //음소거 버튼
     public void Btn_Mute_Icon(bool seBGM)
@@ -165,7 +142,7 @@ public class SoundManager : MonoBehaviour {
         {
             option.isSE_Mute = !option.isSE_Mute;
             SoundMute(option.isSE_Mute, option.seMutePanel, option.seValue, option.seSlider.value);
-            //Mute_Support(option.isSE_Mute, soundController.se.transform.gameObject);
+            Mute_Support(option.isSE_Mute, soundController.se.transform.gameObject);
             soundController.se.clip = null;
         }
 
@@ -173,7 +150,7 @@ public class SoundManager : MonoBehaviour {
         {
             option.isBGM_Mute = !option.isBGM_Mute;
             SoundMute(option.isBGM_Mute, option.bgmMutePanel, option.bgmValue, option.bgmSlider.value);
-            //Mute_Support(option.isBGM_Mute, soundController.bgm.transform.gameObject);
+            Mute_Support(option.isBGM_Mute, soundController.bgm.transform.gameObject);
         }
     }
     /// <summary>
@@ -208,6 +185,29 @@ public class SoundManager : MonoBehaviour {
         soundValue = value;
     }
     
+    public void Btn_Open()
+    {
+        if(!optionObj.activeSelf)
+        {
+            isObjOn = true;
+            optionObj.transform.parent = GameManager.ins.ui.alretObj.transform.parent;
+            GameManager.ins.ui.alretObj.transform.SetAsLastSibling();
+            optionObj.SetActive(true);
+        }
+        else
+            Close_support();
+    }
+
+    void Close_support()
+    {
+        if (optionObj.activeSelf)
+        {
+            isObjOn = false;
+            optionObj.SetActive(false);
+            optionObj.transform.parent = this.gameObject.transform;
+        }
+    }
+
     //bgm 볼륨 조절
     public void Btn_OptionBGMValue(bool leftTrueRightFalse)
     {

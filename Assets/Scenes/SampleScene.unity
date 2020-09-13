@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4207,10 +4207,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 275921390}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: Quit
-        m_Mode: 6
+      - m_Target: {fileID: 729880411}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: Btn_Open
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4723,7 +4723,7 @@ RectTransform:
   m_Children:
   - {fileID: 1553402001}
   m_Father: {fileID: 961825484}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -4850,7 +4850,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1581620097}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.85882354
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5030,7 +5030,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3e0594ffbe6714abb9b5c63592d497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainObj: {fileID: 1110966952}
+  optionObj: {fileID: 1110966952}
+  isObjOn: 0
   btnCancel: {fileID: 0}
   btnComfirm: {fileID: 0}
   btnBack: {fileID: 0}
@@ -7177,10 +7178,10 @@ RectTransform:
   - {fileID: 1486901015}
   - {fileID: 1856895223}
   - {fileID: 272341727}
-  - {fileID: 1853641129}
   - {fileID: 998048708}
   - {fileID: 966016667}
   - {fileID: 710646739}
+  - {fileID: 1853641129}
   - {fileID: 1129375842}
   - {fileID: 938253549}
   m_Father: {fileID: 0}
@@ -7283,7 +7284,7 @@ RectTransform:
   - {fileID: 1411749455}
   - {fileID: 1713029728}
   m_Father: {fileID: 961825484}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -7362,7 +7363,7 @@ RectTransform:
   - {fileID: 505148976}
   - {fileID: 1805763069}
   m_Father: {fileID: 961825484}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -11985,7 +11986,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uD655\uC778"
+  m_Text: "\uAC8C\uC784\uC885\uB8CC"
 --- !u!222 &1777475382
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12292,6 +12293,7 @@ MonoBehaviour:
   state: 0
   tm: {fileID: 1410137856}
   ui: {fileID: 275921390}
+  sm: {fileID: 729880411}
   isNewGame: 0
   isAllClear: 0
   keyPoint: 1
@@ -12391,7 +12393,7 @@ RectTransform:
   m_Children:
   - {fileID: 578932811}
   m_Father: {fileID: 961825484}
-  m_RootOrder: 3
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
