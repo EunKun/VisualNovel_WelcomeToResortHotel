@@ -162,15 +162,22 @@ public class TextManager : MonoBehaviour
 
         if (_script == "")
         {
-            scriptNum++;
-            NextScript();
+            if (_mode.Contains("select"))
+            {
+                SelectButton.Open(_mode, _selectBtn, _keypoint);
+            }
+            else
+            {
+                scriptNum++;
+                NextScript();
+            }
         }
         else
         {
             PlayerNameCheck(ref _charaName, ref _script);
 
             yield return new WaitUntil(() => GameManager.ins.state == GameManager.State.Play);
-            
+
             if (_mode.Contains("select"))
                 SelectButton.Open(_mode, _selectBtn, _keypoint);
 
