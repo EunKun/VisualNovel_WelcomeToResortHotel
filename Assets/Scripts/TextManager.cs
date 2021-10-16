@@ -128,7 +128,8 @@ public class TextManager : MonoBehaviour
         {
             outputScripts = Script.MakeScript(totalScripts[scriptNum]);
 
-            StartCoroutine(PlayScript(outputScripts[0], outputScripts[1], outputScripts[3], outputScripts[4], outputScripts[5], outputScripts[6], outputScripts[7], outputScripts[8]));
+            StartCoroutine(PlayScript(outputScripts[0], outputScripts[1], outputScripts[3], 
+                outputScripts[4], outputScripts[5], outputScripts[6], outputScripts[7], outputScripts[8]));
             scriptNum++;
         }
         else
@@ -141,7 +142,8 @@ public class TextManager : MonoBehaviour
         }
     }
 
-    IEnumerator PlayScript(string _mode, string _charaName, string _charaMoving, string _script, string _bgm, string _se, string _selectBtn, string _keypoint)
+    IEnumerator PlayScript(string _mode, string _charaName, string _charaMoving, string _script, 
+        string _bgm, string _se, string _selectBtn, string _keypoint)
     {
         //테스트용 스크립트 출력용
         testViewScript.text = totalScripts[scriptNum];

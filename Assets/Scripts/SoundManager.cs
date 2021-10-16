@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-    
+
 public class SoundManager : MonoBehaviour {
 
     public static SoundManager ins;
@@ -79,13 +79,13 @@ public class SoundManager : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
         //옵션창 텍스트값
-        if (optionObj.activeSelf)
+        if (optionObj.activeSelf && Input.GetMouseButton(0) || Input.GetMouseButtonUp(0))
         {
             if (!option.isBGM_Mute)
             {
-                if (Input.GetMouseButtonUp(0) && ViewValue(option.bgmSlider.value) != ViewValue(option.bgmValue))
+                if (ViewValue(option.bgmSlider.value) != ViewValue(option.bgmValue))
                     Save();
 
                 option.bgmValueText.text = ViewValue(option.bgmSlider.value);
@@ -98,7 +98,7 @@ public class SoundManager : MonoBehaviour {
 
             if (!option.isSE_Mute)
             {
-                if (Input.GetMouseButtonUp(0) && ViewValue(option.seSlider.value) != ViewValue(option.seValue))
+                if (ViewValue(option.seSlider.value) != ViewValue(option.seValue))
                     Save();
 
                 option.seValueText.text = ViewValue(option.seSlider.value);
@@ -141,32 +141,16 @@ public class SoundManager : MonoBehaviour {
         if (seBGM)
         {
             option.isSE_Mute = !option.isSE_Mute;
-            SoundMute(option.isSE_Mute, option.seMutePanel, option.seValue, option.seSlider.value);
-            Mute_Support(option.isSE_Mute, soundController.se.transform.gameObject);
+            SoundMute(option.isSE_Mute, option.seMutePanel, option.seValue, option.seSlider.value, soundController.se.transform.gameObject.GetComponent<Button>());
             soundController.se.clip = null;
         }
-
-        if (!seBGM)
+        else
         {
             option.isBGM_Mute = !option.isBGM_Mute;
-            SoundMute(option.isBGM_Mute, option.bgmMutePanel, option.bgmValue, option.bgmSlider.value);
-            Mute_Support(option.isBGM_Mute, soundController.bgm.transform.gameObject);
+            SoundMute(option.isBGM_Mute, option.bgmMutePanel, option.bgmValue, option.bgmSlider.value, soundController.bgm.transform.gameObject.GetComponent<Button>());
         }
     }
-    /// <summary>
-    /// mute : SE / BGM을 메뉴를 결정. bgmAndSE : mute bool에 따라 결정됨. 
-    /// </summary>
-    /// <param name="mute"></param>
-    /// <param name="bgmAndSE"></param>
-    /// <param name="yukariSpeedchBubbleFalse"></param>
-    /// <param name="yukariSpeedchBubbleTrue"></param>
-    void Mute_Support(bool mute, GameObject bgmAndSE)
-    {
-        if (mute)
-            bgmAndSE.SetActive(false);
-        else
-            bgmAndSE.SetActive(true);
-    }
+    
     /// <summary>
     /// isMute가 true면 원래색 / false면 panel색을 반투명.
     /// soundValue 값을 value값으로 옮겨 음소거 시, 사운드 볼륨조절을 하지 못하게 함
@@ -175,7 +159,7 @@ public class SoundManager : MonoBehaviour {
     /// <param name="panel"></param>
     /// <param name="soundValue"></param>
     /// <param name="value"></param>
-    void SoundMute(bool isMute, GameObject panel, float soundValue, float value)
+    void SoundMute(bool isMute, GameObject panel, float soundValue, float value, Button bgmAndSE)
     {
         if (isMute)
             panel.GetComponent<Text>().color = option.color[0];
@@ -183,6 +167,11 @@ public class SoundManager : MonoBehaviour {
             panel.GetComponent<Text>().color = option.color[1];
 
         soundValue = value;
+
+        if (isMute)
+            bgmAndSE.interactable = false;
+        else
+            bgmAndSE.interactable = true;
     }
     
     public void Btn_Open()

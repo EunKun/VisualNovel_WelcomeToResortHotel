@@ -1,0 +1,8 @@
+﻿Library
+UserSettings
+*.sln
+*.vsconfig
+*.csproj
+obj
+Packages
+.vs
