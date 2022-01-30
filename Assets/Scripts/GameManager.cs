@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
 
     public void Btn_LoadData()
     {
-        Script.Load(PlayerPrefs.GetString(saveString[0]));
+        LoadScript.Load(PlayerPrefs.GetString(saveString[0]));
         TextManager.scriptNum = PlayerPrefs.GetInt(saveString[1], 1);
         keyPoint = PlayerPrefs.GetInt(saveString[2], 1);
         TextManager.playerName = PlayerPrefs.GetString(saveName, "서진");

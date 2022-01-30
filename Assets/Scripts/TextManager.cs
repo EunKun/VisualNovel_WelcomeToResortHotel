@@ -97,23 +97,23 @@ public class TextManager : MonoBehaviour
         LoadNewText(scriptFileName);
 
         if (isNovelScriptMode)
-            Script.NovelScriptMode("v_mode");
+            LoadScript.NovelScriptMode("v_mode");
         else
-            Script.NovelScriptMode("n_mode");
+            LoadScript.NovelScriptMode("n_mode");
     }
 
     void Update()
     {
         if (GameManager.ins.state == GameManager.State.Play)
         {
-            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKey(KeyCode.Return))
                 NextScript();
         }
 
         if (isNovelScriptMode)
-            Script.PeriodIcon(novelMainScriptText.transform.GetChild(0).gameObject);
+            LoadScript.PeriodIcon(novelMainScriptText.transform.GetChild(0).gameObject);
         else
-            Script.PeriodIcon(normalMainScriptText.transform.GetChild(0).gameObject);
+            LoadScript.PeriodIcon(normalMainScriptText.transform.GetChild(0).gameObject);
 
         if (Input.GetKeyDown(KeyCode.L))
             LogView.OpenLog();
@@ -126,7 +126,7 @@ public class TextManager : MonoBehaviour
     {
         if (scriptNum < totalScripts.Length)
         {
-            outputScripts = Script.MakeScript(totalScripts[scriptNum]);
+            outputScripts = LoadScript.MakeScript(totalScripts[scriptNum]);
 
             StartCoroutine(PlayScript(outputScripts[0], outputScripts[1], outputScripts[3], 
                 outputScripts[4], outputScripts[5], outputScripts[6], outputScripts[7], outputScripts[8]));
@@ -142,6 +142,27 @@ public class TextManager : MonoBehaviour
         }
     }
 
+    void ModCheck(string _mod)
+    {
+        if (_mod != "")
+        {
+            if (_mod.Contains("_mode"))
+                LoadScript.NovelScriptMode(_mod);
+
+            if (_mod.Contains("centerImage"))
+                CenterImagePanel(_mod);
+
+            if (_mod.Contains("fadein") || _mod.Contains("fadeout"))
+                StartCoroutine(Fade(_mod));
+
+            if (_mod.Contains("jump"))
+            {
+                string[] _temp = _mod.Split('_');
+                LoadNewText(_temp[1]);
+            }
+        }
+    }
+
     IEnumerator PlayScript(string _mode, string _charaName, string _charaMoving, string _script, 
         string _bgm, string _se, string _selectBtn, string _keypoint)
     {
@@ -150,17 +171,7 @@ public class TextManager : MonoBehaviour
 
         GameManager.ins.SaveData();
 
-        if(_mode != "")
-        {
-            if (_mode.Contains("_mode"))
-                Script.NovelScriptMode(_mode);
-
-            if (_mode.Contains("centerImage"))
-                CenterImagePanel(_mode);
-
-            if (_mode.Contains("fadein") || _mode.Contains("fadeout"))
-                StartCoroutine(Fade(_mode));
-        }
+        ModCheck(_mode);
 
         if (_script == "")
         {
@@ -187,20 +198,25 @@ public class TextManager : MonoBehaviour
             StopAllCoroutines();
 
             if (isCenterScriptMode)
-                StartCoroutine(Script.OutputText(centerMainScriptText, _charaName, _script));
+                StartCoroutine(LoadScript.OutputText(centerMainScriptText, _charaName, _script));
             else
             {
                 if (isNovelScriptMode)
-                    StartCoroutine(Script.OutputText(novelMainScriptText, _charaName, _script));
+                    StartCoroutine(LoadScript.OutputText(novelMainScriptText, _charaName, _script));
                 else
-                    StartCoroutine(Script.OutputText(normalMainScriptText, _charaName, _script));
+                    StartCoroutine(LoadScript.OutputText(normalMainScriptText, _charaName, _script));
             }
 
-            Script.CharaMove(_charaMoving, charaObjs);
+            LoadScript.CharaMove(_charaMoving, charaObjs);
 
             //나중에 풀어야 함
             PlayMusic.Play(_bgm, _se); 
         }
+    }
+
+    void JumpNextScript()
+    {
+
     }
 
     IEnumerator Fade(string _mode)
@@ -216,10 +232,12 @@ public class TextManager : MonoBehaviour
                 Debug.Log("페이드 시간 : " + _modeCheck[1]);
 
                 int _fadeTimeLength = int.Parse(_modeCheck[1]);
+                float _time = _fadeTimeLength * 0.1f;
 
-                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 1, _fadeTimeLength * 0.1f);
-                yield return new WaitForSeconds(_fadeTimeLength * 0.1f);
-                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 0, _fadeTimeLength * 0.1f);
+                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 1, _time);
+                yield return new WaitForSeconds(_time);
+                LeanTween.alphaCanvas(fadeOut.GetComponent<CanvasGroup>(), 0, _time);
+                yield return new WaitForSeconds(_time);
 
                 GameManager.ins.state = GameManager.State.Play;
             }
@@ -252,7 +270,7 @@ public class TextManager : MonoBehaviour
 
     public void LoadNewText(string _scriptFileName)
     {
-        totalScripts = Script.Load(_scriptFileName);
+        totalScripts = LoadScript.Load(_scriptFileName);
         outputScripts = totalScripts[scriptNum].Split(',');
         novelMainScriptText.text = "";
     }
